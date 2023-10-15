@@ -1,11 +1,12 @@
 package com.gl4.tp2
 
 class Student {
-    constructor(nom:String,prenom:String,genre: Genre, matiere : Matiere){
+    constructor(nom:String,prenom:String,genre: Genre, matiere : Matiere, etat:Etat){
         this.nom=nom
         this.prenom=prenom
         this.genre=genre
         this.matiere=matiere
+        this.etat=etat
     }
     var  nom: String=""
     var  prenom: String=""
