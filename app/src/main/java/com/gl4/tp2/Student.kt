@@ -11,11 +11,15 @@ class Student {
     var  prenom: String=""
     var genre: Genre=Genre.MASCULIN
     var matiere: Matiere = Matiere.COURS
+    var etat: Etat = Etat.ABSENT
 
 }
 
 enum class Genre{
     FEMININ, MASCULIN
+}
+enum class Etat{
+    ABSENT, PRESENT
 }
 enum class Matiere{
     COURS, TP

@@ -29,7 +29,8 @@ class MainActivity : AppCompatActivity() {
         var matieres = listOf<String>("Cours","TP")
         spinner.adapter = ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,matieres)
 
-
+        var etats = listOf<String>("NotSelected","Absent" , "Present")
+        // spinner.adapter = ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,matieres)
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
