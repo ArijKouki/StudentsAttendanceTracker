@@ -1,5 +1,6 @@
 package com.gl4.tp2
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +30,7 @@ class StudentAdapter(private val students: ArrayList<Student>) : RecyclerView.Ad
     }
 
     override fun onBindViewHolder(holder: StudentViewHolder, position: Int) {
-        val student = students[position]
+        val student = dataFilterList[position]
         holder.studentName.text = "${student.nom} ${student.prenom}"
 
         if (student.genre == Genre.MASCULIN) {
@@ -40,7 +41,7 @@ class StudentAdapter(private val students: ArrayList<Student>) : RecyclerView.Ad
     }
 
     override fun getItemCount(): Int {
-        return students.size
+        return dataFilterList.size
     }
 
     override fun getFilter(): Filter {
@@ -62,6 +63,7 @@ class StudentAdapter(private val students: ArrayList<Student>) : RecyclerView.Ad
                 }
                 val filterResults = FilterResults()
                 filterResults.values = dataFilterList
+                Log.d("Filtered: ", dataFilterList.toString())
                 return filterResults
             }
 
