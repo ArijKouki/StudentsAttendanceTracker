@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.SearchView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,12 +20,13 @@ class MainActivity : AppCompatActivity() {
     val spinnerMatiere : Spinner by lazy { findViewById(R.id.spinner) }
     val spinnerPresence : Spinner by lazy { findViewById(R.id.spinner2) }
     val recyclerView: RecyclerView by lazy{ findViewById(R.id.recyclerView)}
-    val searchBar: EditText by lazy {findViewById(R.id.searchBar)}
+    val searchBar: androidx.appcompat.widget.SearchView by lazy {findViewById(R.id.search)}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         var matieres = listOf<String>("All","Cours","TP")
 
@@ -93,26 +95,21 @@ class MainActivity : AppCompatActivity() {
                 // Handle the case when nothing is selected
             }
         }
-
-
-
-
-        searchBar.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Not needed for this example
+        searchBar.setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                val filteredStudents = ArrayList(originalStudents.filter { it.nom.lowercase().contains(query!!.lowercase()) })
+                applyMatiereFilter(filteredStudents,adapter)
+                applyPresenceFilter(filteredStudents,adapter)
+                return true
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Filter the data in the adapter when text changes
-                //Toast.makeText(this@MainActivity, s, Toast.LENGTH_SHORT).show()
-                adapter.filter.filter(s)
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                // Not needed for this example
+            override fun onQueryTextChange(newText: String?): Boolean {
+                val filteredStudents = ArrayList(originalStudents.filter { it.nom.lowercase().contains(newText!!.lowercase()) })
+                applyMatiereFilter(filteredStudents,adapter)
+                applyPresenceFilter(filteredStudents,adapter)
+                return true
             }
         })
-
 
     }
     private fun applyMatiereFilter(filteredStudents: ArrayList<Student>, adapter : StudentAdapter) {
