@@ -20,3 +20,7 @@ enum class Genre{
 enum class Matiere{
     COURS, TP
 }
+
+enum class Etat{
+    PRESENT, ABSENT
+}

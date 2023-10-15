@@ -11,7 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 
-class StudentAdapter(private val students: ArrayList<Student>) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(),Filterable {
+class StudentAdapter(private var students: ArrayList<Student>) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(),Filterable {
 
     var dataFilterList = ArrayList<Student>()
     init {
@@ -43,6 +43,12 @@ class StudentAdapter(private val students: ArrayList<Student>) : RecyclerView.Ad
     override fun getItemCount(): Int {
         return dataFilterList.size
     }
+
+    fun updateData(newData: ArrayList<Student>) {
+        dataFilterList = newData
+        notifyDataSetChanged()
+    }
+
 
     override fun getFilter(): Filter {
         return object : Filter(){

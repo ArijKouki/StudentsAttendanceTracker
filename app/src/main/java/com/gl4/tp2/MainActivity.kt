@@ -29,21 +29,6 @@ class MainActivity : AppCompatActivity() {
         var matieres = listOf<String>("Cours","TP")
         spinner.adapter = ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,matieres)
 
-
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedItem = spinner.selectedItem as String
-                Toast.makeText(this@MainActivity, "$selectedItem selected", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onNothingSelected(adapterView: AdapterView<*>?) {
-            }
-        }
-
-
-
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
 
@@ -58,6 +43,29 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = StudentAdapter(students)
         recyclerView.adapter = adapter
+
+
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedItem = spinner.selectedItem as String
+                Toast.makeText(this@MainActivity, "$selectedItem selected", Toast.LENGTH_SHORT).show()
+                val filteredStudents = when (selectedItem) {
+                    "Cours" -> ArrayList(students.filter { it.matiere == Matiere.COURS })
+                    "TP" -> ArrayList(students.filter { it.matiere == Matiere.TP })
+                    else -> ArrayList(students )// Show all students when nothing is selected
+                }
+                adapter.updateData(filteredStudents)
+            }
+
+            override fun onNothingSelected(adapterView: AdapterView<*>?) {
+            }
+        }
+
+
+
+
 
         searchBar.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
