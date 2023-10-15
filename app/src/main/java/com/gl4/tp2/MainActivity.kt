@@ -2,9 +2,12 @@ package com.gl4.tp2
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     val spinner : Spinner by lazy { findViewById(R.id.spinner) }
     val recyclerView: RecyclerView by lazy{ findViewById(R.id.recyclerView)}
+    val searchBar: EditText by lazy {findViewById(R.id.searchBar)}
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         val layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
 
-        val students = mutableListOf<Student>()
+        val students = ArrayList<Student>()
 
         // Add some students to the list
         students.add(Student("Kouki", "Arij", Genre.FEMININ,Matiere.COURS))
@@ -54,8 +58,22 @@ class MainActivity : AppCompatActivity() {
 
         val adapter = StudentAdapter(students)
         recyclerView.adapter = adapter
-        recyclerView.addItemDecoration(NoSpaceItemDecoration())
 
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Not needed for this example
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Filter the data in the adapter when text changes
+                //Toast.makeText(this@MainActivity, s, Toast.LENGTH_SHORT).show()
+                adapter.filter.filter(s)
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // Not needed for this example
+            }
+        })
 
 
     }

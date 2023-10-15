@@ -3,11 +3,20 @@ package com.gl4.tp2
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Locale
 
-class StudentAdapter(private val students: List<Student>) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>() {
+class StudentAdapter(private val students: ArrayList<Student>) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(),Filterable {
+
+    var dataFilterList = ArrayList<Student>()
+    init {
+        dataFilterList=  students
+    }
+
 
     class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val studentImage: ImageView = itemView.findViewById(R.id.imageView)
@@ -33,4 +42,35 @@ class StudentAdapter(private val students: List<Student>) : RecyclerView.Adapter
     override fun getItemCount(): Int {
         return students.size
     }
+
+    override fun getFilter(): Filter {
+        return object : Filter(){
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                if (charSearch.isEmpty()) {
+                    dataFilterList = students
+                } else {
+                    val resultList = ArrayList<Student>()
+                    for (student in students) {
+                        if (student.nom.lowercase(Locale.ROOT)
+                                .contains(charSearch.lowercase(Locale.ROOT))
+                        ) {
+                            resultList.add(student)
+                        }
+                    }
+                    dataFilterList = resultList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = dataFilterList
+                return filterResults
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                dataFilterList = results?.values as ArrayList<Student>
+                notifyDataSetChanged()
+            }
+
+        }
+    }
+
 }
