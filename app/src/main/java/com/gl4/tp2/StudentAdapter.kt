@@ -1,6 +1,5 @@
 package com.gl4.tp2
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,17 +11,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 
-class StudentAdapter(private val students: ArrayList<Student>) : RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(),Filterable {
+class StudentAdapter(private var students: List<Student>) :
+    RecyclerView.Adapter<StudentAdapter.StudentViewHolder>(), Filterable {
 
-    var dataFilterList = ArrayList<Student>()
-    private var studentStates = mutableMapOf<Int, Boolean>()
-    init {
-        dataFilterList=  students
-        for ((index, student) in students.withIndex()) {
-            studentStates[index] = student.etat == Etat.PRESENT
-        }
-    }
-
+    private var dataFilterList: List<Student> = students
 
     class StudentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val studentImage: ImageView = itemView.findViewById(R.id.imageView)
@@ -31,7 +23,8 @@ class StudentAdapter(private val students: ArrayList<Student>) : RecyclerView.Ad
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StudentViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.student_item, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.student_item, parent, false)
         return StudentViewHolder(view)
     }
 
@@ -45,56 +38,43 @@ class StudentAdapter(private val students: ArrayList<Student>) : RecyclerView.Ad
             holder.studentImage.setImageResource(R.drawable.woman)
         }
 
+        holder.studentState.setOnCheckedChangeListener(null)
         holder.studentState.isChecked = student.etat == Etat.PRESENT
 
         holder.studentState.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                student.etat = Etat.PRESENT
-            } else {
-                student.etat = Etat.ABSENT
-            }
+            student.etat = if (isChecked) Etat.PRESENT else Etat.ABSENT
         }
-
     }
 
     override fun getItemCount(): Int {
         return dataFilterList.size
     }
 
-    fun updateData(newData: ArrayList<Student>) {
+    fun updateData(newData: List<Student>) {
         dataFilterList = newData
         notifyDataSetChanged()
     }
 
     override fun getFilter(): Filter {
-        return object : Filter(){
+        return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val charSearch = constraint.toString()
-                if (charSearch.isEmpty()) {
-                    dataFilterList = students
+                val charSearch = constraint.toString().toLowerCase(Locale.ROOT)
+                val filteredList = if (charSearch.isEmpty()) {
+                    students
                 } else {
-                    val resultList = ArrayList<Student>()
-                    for (student in students) {
-                        if (student.nom.lowercase(Locale.ROOT)
-                                .contains(charSearch.lowercase(Locale.ROOT))
-                        ) {
-                            resultList.add(student)
-                        }
+                    students.filter {
+                        it.nom.toLowerCase(Locale.ROOT).contains(charSearch)
                     }
-                    dataFilterList = resultList
                 }
+
                 val filterResults = FilterResults()
-                filterResults.values = dataFilterList
-                Log.d("Filtered: ", dataFilterList.toString())
+                filterResults.values = filteredList
                 return filterResults
             }
 
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                dataFilterList = results?.values as ArrayList<Student>
-                notifyDataSetChanged()
+                updateData(results?.values as List<Student>)
             }
-
         }
     }
-
 }
