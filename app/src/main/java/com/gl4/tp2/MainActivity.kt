@@ -1,11 +1,11 @@
 package com.gl4.tp2
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -46,25 +46,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyFilters(
-        matiereFilteredStudents: List<Student>,
-        presenceFilteredStudents: List<Student>,
+        selectedItemMatiere: String,
+        selectedItemPresence: String,
         query: String
     ) {
-        val finalFilteredStudents = ArrayList(originalStudents)
+        val matiereFilteredStudents = when (selectedItemMatiere) {
+            "Cours" -> originalStudents.filter { it.matiere == Matiere.COURS }
+            "TP" -> originalStudents.filter { it.matiere == Matiere.TP }
+            else -> originalStudents
+        }
 
-        // Apply matiere filter
-        val selectedItemMatiere = spinnerMatiere.selectedItem as String
+        val presenceFilteredStudents = when (selectedItemPresence) {
+            "Present" -> originalStudents.filter { it.etat == Etat.PRESENT }
+            "Absent" -> originalStudents.filter { it.etat == Etat.ABSENT }
+            else -> originalStudents
+        }
+
+        val finalFilteredStudents = ArrayList(originalStudents)
         if (selectedItemMatiere != "All") {
             finalFilteredStudents.retainAll(matiereFilteredStudents)
         }
 
-        // Apply presence filter
-        val selectedItemPresence = spinnerPresence.selectedItem as String
         if (selectedItemPresence != "All") {
             finalFilteredStudents.retainAll(presenceFilteredStudents)
         }
 
-        // Apply search filter
         if (query.isNotEmpty()) {
             finalFilteredStudents.retainAll(originalStudents.filter { it.nom.toLowerCase().contains(query.toLowerCase()) })
         }
@@ -75,13 +81,9 @@ class MainActivity : AppCompatActivity() {
     private fun setSpinnerListeners() {
         spinnerMatiere.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedItem = spinnerMatiere.selectedItem as String
-                val filteredStudents = when (selectedItem) {
-                    "Cours" -> originalStudents.filter { it.matiere == Matiere.COURS }
-                    "TP" -> originalStudents.filter { it.matiere == Matiere.TP }
-                    else -> originalStudents
-                }
-                applyFilters(filteredStudents, originalStudents, searchBar.query.toString())
+                val selectedItemMatiere = spinnerMatiere.selectedItem as String
+                val selectedItemPresence = spinnerPresence.selectedItem as String
+                applyFilters(selectedItemMatiere, selectedItemPresence, searchBar.query.toString())
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>?) {
@@ -90,13 +92,9 @@ class MainActivity : AppCompatActivity() {
 
         spinnerPresence.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedItem = spinnerPresence.selectedItem as String
-                val filteredStudents = when (selectedItem) {
-                    "Present" -> originalStudents.filter { it.etat == Etat.PRESENT }
-                    "Absent" -> originalStudents.filter { it.etat == Etat.ABSENT }
-                    else -> originalStudents
-                }
-                applyFilters(originalStudents, filteredStudents, searchBar.query.toString())
+                val selectedItemMatiere = spinnerMatiere.selectedItem as String
+                val selectedItemPresence = spinnerPresence.selectedItem as String
+                applyFilters(selectedItemMatiere, selectedItemPresence, searchBar.query.toString())
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>?) {
@@ -107,12 +105,12 @@ class MainActivity : AppCompatActivity() {
     private fun setSearchViewListener() {
         searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                applyFilters(originalStudents, originalStudents, query.orEmpty())
+                applyFilters(spinnerMatiere.selectedItem as String, spinnerPresence.selectedItem as String, query.orEmpty())
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                applyFilters(originalStudents, originalStudents, newText.orEmpty())
+                applyFilters(spinnerMatiere.selectedItem as String, spinnerPresence.selectedItem as String, newText.orEmpty())
                 return true
             }
         })
